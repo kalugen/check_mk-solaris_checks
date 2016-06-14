@@ -1,4 +1,4 @@
-title: CPU usage of a Solaris ldom
+title: Extended PS Checks for Solaris
 agents: solaris
 catalog: os/kernel
 license: GPL

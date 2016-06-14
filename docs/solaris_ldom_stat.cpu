@@ -1,18 +1,17 @@
-title: CPU usage of a Solaris ldom
+title: CPU usage of a Solaris LDOM
 agents: solaris
 catalog: os/kernel
 license: GPL
 distribution: MIS
 description:
  This check monitors the cpu usage of an LDOM. It is intended to run on a
- physical Oracle VM Server (eg. a T5 or machine) and report data from all
- running ldoms.
+ control domain and report data from all running LDOMs.
 
 item:
  a ldom name
 
 examples:
- # Set default levels for all ldoms
+ # Set default levels for all LDOMs
  ldom_stat_defaults["cpu_levels"] = (90.0, 95.0)
 
  check_parameters = [
