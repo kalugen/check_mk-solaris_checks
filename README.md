@@ -1,1 +1,3 @@
 # PROGETTO UNICO CHECK SOLARIS
+
+Versione: 1.0.0
