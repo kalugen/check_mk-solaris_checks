@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+
+echo '<<<solaris_ext_ps>>>'
+/usr/ucb/ps anxwwwww |sed -e 1d -e 's/ *\([^ ]*\) *\([^ ]*\) *\([^ ]*\) *\([^ ]*\) *\(.*\)/\5/'

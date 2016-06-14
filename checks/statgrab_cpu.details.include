@@ -1,0 +1,20 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 2 -*-
+
+
+def cpu_details_check_levels(value, metric, params):
+  rc = 0
+  output = "%s rate is %.2f/s" % (metric,savefloat(value))
+
+  if type(params) == tuple:
+    warn,crit = params
+  elif type(params) == dict:
+    warn = params['warn']
+    crit = params['crit']
+  else:
+    warn,crit = (None,None)
+
+  # TODO: implement the actual check. We are waiting the Solaris Desk to
+  #       agree on the levels
+
+  return (rc,output)

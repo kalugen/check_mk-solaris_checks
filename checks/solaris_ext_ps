@@ -1,0 +1,27 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+inventory_solaris_extend_processes_rules = []
+
+ANY_USER = None
+GRAB_USER = False
+
+def solaris_inventory_ps(info):
+    return solaris_inventory_ps_common(inventory_processes, inventory_solaris_extend_processes_rules, info)
+
+def solaris_check_ps(item, params, info):
+    return solaris_check_ps_common(item, params, info )
+
+
+check_info['solaris_ext_ps'] = {
+    "check_function"          : solaris_check_ps,
+    "inventory_function"      : solaris_inventory_ps,
+    "service_description"     : "ps_ext_%s",
+    "includes"                : [ "solaris_ext_ps.include","ps","ps.include" ],
+    "has_perfdata"            : True,
+    "node_info"               : True, # add first column with actual host name
+}
+
+# NOTE: This check is deprecated and will be removed any decade now. ps now
+# does always performance data.
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -1,0 +1,108 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 2 -*-
+
+# Regexp handling function changed name after 1.2.6
+if("1.2.6" not in check_mk_version):
+  get_regex = regex
+
+# Example input:
+#
+# <<<statgrab_cpu>>>
+# ctxsw 55788481216
+# idle 26734304656
+# intrs 38966188967
+# iowait 0
+# kernel 532420730
+# nice 0
+# nvctxsw 245455154
+# softintrs 0
+# swap 0
+# syscalls 228316916169
+# systime 1448879847
+# total 27612231489
+# user 345506103
+# vctxsw 55543026062
+
+# Default parameters values - support for wATO check paramaters
+factory_settings["solaris_cpu_details_defaults"] = {
+  "ctxsw_levels"    : (100000000.0,1000000000.0),
+  "intrs_levels"    : (100000000.0,1000000000.0),
+  "syscalls_levels" : (100000000.0,1000000000.0),
+}
+
+# Inventory function
+def inventory_solaris_cpu_details(info):
+
+  relevant_metrics = get_regex('ctxsw|intrs|syscalls')
+
+  for line in info:
+    if relevant_metrics.match(line[0]):
+      return [ ( None,{} ) ]
+
+# Check function
+def check_solaris_cpu_details(item, params, info):
+  # Parsing dei parametri
+  (ctxsw_warn, ctxsw_crit)       = params["ctxsw_levels"]
+  (intrs_warn, intrs_crit)       = params["intrs_levels"]
+  (syscalls_warn, syscalls_crit) = params["syscalls_levels"]
+
+  now = time.time()
+
+  for line in info:
+    counter = saveint(line[1])
+
+    if line[0] == 'ctxsw':
+      current_ctxsw = counter
+    elif line[0] == 'intrs':
+      current_intrs = counter
+    elif line[0] == 'syscalls':
+      current_syscalls = counter
+    elif line[0] == 'vctxsw':
+      current_vctxsw = counter
+    elif line[0] == 'nvctxsw':
+      current_nvctxsw = counter
+
+  # Get the average over "avg_min" minutes
+  ctxsw_rate    = get_rate("solaris_cpu_details.ctxsw"  , now, current_ctxsw)
+  intrs_rate    = get_rate("solaris_cpu_details.intrs"  , now, current_intrs)
+  syscalls_rate = get_rate("solaris_cpu_details.syscall", now, current_syscalls)
+  vctxsw_rate   = get_rate("solaris_cpu_details.vctxsw" , now, current_vctxsw)
+  nvctxsw_rate  = get_rate("solaris_cpu_details.nvctxsw", now, current_nvctxsw)
+
+  # Get check result and output for all of the metrics
+  ctxsw_rc, ctxsw_output = cpu_details_check_levels(ctxsw_rate, 'ctxsw', params["ctxsw_levels"])
+  intrs_rc, intrs_output = cpu_details_check_levels(intrs_rate, 'intrs', params["intrs_levels"])
+  syscalls_rc, syscalls_output = cpu_details_check_levels(syscalls_rate, 'syscalls', params["syscalls_levels"])
+
+  # Final RC: worst case among all of the metrics RCs - for now, ignore the avg
+  rc = max([intrs_rc, ctxsw_rc, syscalls_rc])
+
+  # Populate the full perfdata array, including the moving average of metrics
+  perfdata = [
+    ("ctxsw_rate",     ctxsw_rate,       None, None, 0, None),
+    ("ctxsw_count",    current_ctxsw,    None, None, 0, None),
+    ("intrs_rate",     intrs_rate,       None, None, 0, None),
+    ("intrs_count",    current_intrs,    None, None, 0, None),
+    ("syscalls_rate",  syscalls_rate,    None, None, 0, None),
+    ("syscalls_count", current_syscalls, None, None, 0, None),
+    ("vctxsw_rate",    vctxsw_rate,      None, None, 0, None),
+    ("vctxsw_count",   current_vctxsw,   None, None, 0, None),
+    ("nvctxsw_rate",   nvctxsw_rate,     None, None, 0, None),
+    ("nvctxsw_count",  current_nvctxsw,  None, None, 0, None),
+  ]
+
+  output  = ctxsw_output + ", " + intrs_output + ", " + syscalls_output
+
+  return(rc, output, perfdata)
+
+# Register the check with all its attributes
+check_info['statgrab_cpu.details'] = {
+    "check_function"          : check_solaris_cpu_details,
+    "inventory_function"      : inventory_solaris_cpu_details,
+    "service_description"     : "CPU Details",
+    "has_perfdata"            : True,
+    "group"                   : "solaris_cpu_details_group",
+    "default_levels_variable" : "solaris_cpu_details_defaults",
+    "includes"                : ["statgrab_cpu.details.include"]
+}
+

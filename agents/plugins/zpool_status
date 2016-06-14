@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+
+echo "<<<solaris_zpool>>>"
+zpool list -H | awk '{print $1, $5, $(NF-1)}' | sed 's/%//g' | while read POOL USAGE STATE; do
+  ERRORS=$(zpool status -v ${POOL}|grep errors:|sed 's/ /_/g')
+  echo ${POOL} ${USAGE} ${STATE} ${ERRORS#*:_}
+done
+

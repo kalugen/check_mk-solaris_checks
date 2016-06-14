@@ -1,0 +1,45 @@
+# This file is free software; you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+# Excluded zones. Some users may want to exclude the global zone.
+inventory_solaris_exclude_zone = [ 'global' ];
+
+factory_settings['zone_stat_defaults'] = {
+  "cpu_levels": (80.0,90.0),
+  "mem_levels": (80.0,90.0)
+};
+
+def inventory_solaris_zone_stat(info):
+    inventory = []
+
+    for line in info:
+       zone_name = line[0]
+       inventory.append((zone_name,{}))
+
+    return inventory
+
+
+def check_solaris_zone_simple(item,metric,params,usage):
+  warn,crit = params
+
+  perfdata = [ ( "usage", usage, warn, crit, 0, 100 ) ]
+  output   = "%s %s at %.2f%%" % (item,metric,usage)
+  rc       = 0
+
+  if usage >= crit:
+    rc = 2
+  elif usage >= warn:
+    rc = 1
+
+  return (rc, output, perfdata)
+
+
+

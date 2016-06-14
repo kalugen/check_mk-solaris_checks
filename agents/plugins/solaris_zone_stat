@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+echo "<<<solaris_zone_stat>>>"
+for ZONEDATA in $(zoneadm list -p); do
+  IFS=":" read -r -a ZONE <<< "${ZONEDATA}"
+  prstat -Z -z ${ZONE[0]} 1 1 | grep ${ZONE[1]}
+done | sed 's/%//g' | nawk '{print $NF,$7,$5}'

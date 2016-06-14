@@ -1,0 +1,98 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+# +------------------------------------------------------------------+
+# |             ____ _               _        __  __ _  __           |
+# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
+# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
+# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
+# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
+# |                                                                  |
+# | Copyright Mathias Kettner 2014             mk@mathias-kettner.de |
+# +------------------------------------------------------------------+
+#
+# This file is part of Check_MK.
+# The official homepage is at http://mathias-kettner.de/check_mk.
+#
+# check_mk is free software;  you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+# Example out from agent:
+# <<<solaris_nfsmount>>>
+# /ORA_BACKUP ko
+# /data/ALLIANCEC ok
+# /data/FILES pk
+# /data/SVI ko
+
+# E' necessario definire qui la variabile, altrimenti non funziona la regola di inventory
+inventory_nfsmounts = []
+
+def inventory_solaris_nfsmount(info):
+    allrules = []
+    ignrules = []
+
+    for rule in inventory_nfsmounts:
+        # 1. Get all rules matching the current host
+        taglist, hostlist = rule[1:3]
+
+        if not hosttags_match_taglist(tags_of_host(g_hostname), taglist) \
+          or not in_extraconf_hostlist(hostlist, g_hostname):
+            continue
+
+        # 2. Now extract the list of service regexes
+        nfsitems = rule[0]
+        allowednfs = nfsitems.get('nfs_allowed', [])
+        ignorednfs = nfsitems.get('nfs_ignored', [])
+
+    inventory = []
+
+    for line in info:
+        mountpoint = line[0]
+
+        # Priorità alla whitelist: se settata usa solo i fs elencati
+        if allowednfs:
+            if (mountpoint in allowednfs):
+                inventory.append( (mountpoint, {}) )
+
+        # Altrimenti, se esiste la blacklist, usa tutto meno i fs elencati
+        elif ignorednfs:
+            if (not mountpoint in ignorednfs):
+                inventory.append( (mountpoint, {}) )
+
+        # Se non ci sono liste popolate, tira dentro tutti i filesystem
+        else:
+            inventory.append( (mountpoint, {}) )
+
+    return inventory
+
+
+def check_solaris_nfsmount(item, params, info):
+    # Se l'output non c'è, ritorna UNKNOWN
+    if len(info) == 0:
+        return (3, "no information sent by agent")
+
+    for line in info:
+        mountpoint = line[0]
+
+        if mountpoint == item:
+            if line[1] == 'ok':
+                return 0, "mount seems OK"
+            else:
+                return 2, "Server not responding"
+
+    return (3, "Not Mounted")
+
+
+check_info["solaris_nfsmounts"] = {
+    'check_function':          check_solaris_nfsmount,
+    'inventory_function':      inventory_solaris_nfsmount,
+    'service_description':     'Solaris NFS mount %s',
+    'has_perfdata':            False
+}

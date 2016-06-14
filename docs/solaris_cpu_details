@@ -1,0 +1,43 @@
+title: Details on CPU usage for Solaris statgrab
+agents: os
+catalog: os/kernel
+license: GPL
+distribution: MIS
+description:
+ This check monitors the rate per second at which the CPU handles various opertions.
+ Context Switches, Interrupts and Syscalls are mesured and checked againsta predefined
+ levels, while metrics on Virtual Context Switches and NV Context Switches are just
+ reported as perfdata.
+
+item:
+ Nothing
+
+examples:
+ # Set default levels for all zones
+ solaris_cpu_details_defaults["intrs_levels"] = (9000.0, 9500.0)
+
+ check_parameters = [
+    # Hosts with tag "production" get custom levels
+    ( {'ctxsw_levels': (8500.0, 95000.0), {'intrs_levels' : (1000.0, 100000,0) } }, ['production', ], ALL_HOSTS, ALL_SERVICES ),
+ ] + check_parameters
+
+perfdata:
+ the check reports both the rate (#/s) and the actual value of the counter for:
+ * ctxsw
+ * intrs
+ * syscalls
+ * vctxsw
+ * nvctxsw
+
+inventory:
+ This check supports inventory.
+
+[parameters]
+parameters (dict): this check supports the new parameters dictionary format.
+
+{"ctxsw_levels"}: Warning and critical context switch rate levels
+{"intrs_levels"}: Warning and critical interrupts rate levels
+{"syscalls_levels"}: Warning and critical syscalls rate levels
+
+[configuration]
+solaris_cpu_details_defaults: Default levels for ctxsw, intrs and syscalls rates.

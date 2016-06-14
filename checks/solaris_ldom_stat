@@ -1,0 +1,67 @@
+# This file is free software; you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+##### CPU #####
+
+inventory_solaris_exclude_ldom = [];
+
+factory_settings['ldom_stat_defaults'] = {
+  "cpu_levels": (80.0,90.0),
+  "core_levels": (12.5,1000.0)
+};
+
+def inventory_solaris_ldom_stat(info):
+    inventory = []
+
+    for line in info:
+       ldom_name = line[0]
+       inventory.append((ldom_name,{}))
+
+    return inventory
+
+def check_solaris_ldom_stat_cpu(item,params,info):
+  for line in info:
+    if line[0] == item:
+      core_num  = saveint(line[1])
+      pct_usage = savefloat(line[2])
+
+      # livelli cpu
+      cpu_warn,cpu_crit = params["cpu_levels"]
+
+      # livelli numero di core
+      core_warn,core_crit = params["core_levels"]
+
+      abs_usage = core_num * pct_usage / 100
+
+      perfdata = [
+                    ( "pct", "%f%%"% pct_usage, cpu_warn, cpu_crit, 0, 100 ),
+                    ( "abs", abs_usage, None, None, 0, core_num ),
+                    ( "core",  core_num, None, None, None, None)
+                 ]
+
+      output = "%s cpu at %.2f%% (%.2f cores)" % (item,pct_usage,abs_usage)
+      rc = 0
+
+      if pct_usage >= cpu_crit or abs_usage >= core_crit:
+        rc = 2
+      elif abs_usage >= cpu_warn or abs_usage >= core_warn:
+        rc = 1
+
+  return (rc, output, perfdata)
+
+check_info['solaris_ldom_stat.cpu'] = {
+    "check_function"          : check_solaris_ldom_stat_cpu,
+    "inventory_function"      : inventory_solaris_ldom_stat,
+    "service_description"     : "LDOM %s CPU",
+    "has_perfdata"            : True,
+    "group"                   : "solaris_ldom_stat",
+    "default_levels_variable" : "ldom_stat_defaults",
+}

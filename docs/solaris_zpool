@@ -1,0 +1,43 @@
+title: State of ZFS pools
+agents: solaris
+catalog: os/storage
+license: GPL
+distribution: kalugen
+description:
+ This check monitors the state of ZFS pools. It uses a "coarse" grained
+ system command, "zpool -H", reporting on the global usage and state of a whole
+ pool and not treating the pool as a "filesystem" like the zfsget check.
+ Also, this check returns an item for every defined pool and it is not generic
+ as the default zpool_status check, which shows the state of all pools in a
+ single nagios check.
+
+item:
+ a zpool
+
+examples:
+ # Set default levels for all pools
+ solaris_zpool_default_levels["levels"] = (90.0, 95.0)
+
+ check_parameters = [
+    # Hosts with tag "production" get 85/95
+    ( {'levels': (85.0, 95.0), 'critical_state': None}, ['production', ], ALL_HOSTS, ALL_SERVICES ),
+ ]
+
+ # Exclude pool from inventory
+ inventory_solaris_zpool_exclude_pool = [ "rpool-sldmxe" ]
+
+perfdata:
+ Usage levels are saved into the rrd database.
+
+inventory:
+ This check supports inventory.
+
+[parameters]
+parameters (dict): this check supports the new parameters dictionary format.
+
+{"levels"}: Warning and critical usage levels
+{"critical_state"}: State string to use as a critical state, as returned by "zpool -H"
+
+[configuration]
+inventory_solaris_zpool_exclude_pool (list of strings): List of pools to exclude from inventory
+solaris_zpool_default_levels: Default levels for pool usage and status

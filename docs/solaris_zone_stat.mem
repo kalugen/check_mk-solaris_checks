@@ -1,0 +1,38 @@
+title: Memory usage of a Solaris Zone
+agents: solaris
+catalog: os/kernel
+license: GPL
+distribution: kalugen
+description:
+ This check monitors the memory usage of a zone. It is intended to run on a
+ global zone and report data from all running zones.
+
+item:
+ a zone
+
+examples:
+ # Set default levels for all zones
+ solaris_zone_stat_defaults["mem_levels"] = (90.0, 95.0)
+
+ check_parameters = [
+    # Hosts with tag "production" get 85/95
+    ( {'mem_levels': (85.0, 95.0), 'critical_state': None}, ['production', ], ALL_HOSTS, ALL_SERVICES ),
+ ]
+
+ # Exclude pool from inventory
+ inventory_solaris_zone_exclude = [ "zone_name" ]
+
+perfdata:
+ Memory occupation levels are saved into the rrd database.
+
+inventory:
+ This check supports inventory.
+
+[parameters]
+parameters (dict): this check supports the new parameters dictionary format.
+
+{"mem_levels"}: Warning and critical memory usage levels
+
+[configuration]
+inventory_solaris_zone_exclude (list of strings): List of pools to exclude from inventory
+solaris_zone_stat_defaults: Default levels for zone cpu and memory usage levels

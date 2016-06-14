@@ -1,0 +1,32 @@
+#!/usr/bin/bash
+
+# Esempio di input:
+#
+# #device                                 device      mount             FS      fsck    mount   mount
+# #to mount                               to fsck     point             type    pass    at boot options
+# #
+# /proc                                   -           /proc             proc    -       no      -
+# ctfs                                    -           /system/contract  ctfs    -       no      -
+# objfs                                   -           /system/object    objfs   -       no      -
+# sharefs                                 -           /etc/dfs/sharetab sharefs -       no      -
+# fd                                      -           /dev/fd           fd      -       no      -
+# swap                                    -           /tmp              tmpfs   -       yes     -
+# xsnetappdw:/vol/vol0_nfs_lab            -           /data/FILES       nfs     -       yes     bg,hard,intr
+# xsnetappdw:/vol/vol0_nfs_lab/ALLIANCEC  -           /data/ALLIANCEC   nfs     -       yes     bg,hard,intr
+# xpnetappup:/vol/vol0_nfs_svil/SKYS      -           /data/SVI         nfs     -       yes     bg,hard,intr
+# xpnetappup:/vol/vol_rman_backup         -           /ORA_BACKUP       nfs     -       yes     rw,rsize=32768,wsize=32768,hard,intr,bg,suid,timeo=600
+
+echo '<<<solaris_nfsmount>>>'
+
+grep nfs /etc/vfstab | egrep -v "^#" | nawk '{ print $3 }' | sort | while read MOUNT_POINT; do
+    STATE=$(nfsstat -m ${MOUNT_POINT})
+
+    if [ "${STATE}" = "" ]; then
+        echo "${MOUNT_POINT} ko"
+    else
+        echo "${MOUNT_POINT} ok"
+    fi
+
+done
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

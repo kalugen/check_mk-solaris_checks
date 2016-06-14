@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+# Output di ldm list
+
+#  NAME       STATE   FLAGS   CONS  VCPU  MEMORY  UTIL  NORM  UPTIME
+#  primary    active  -n-cv-  UART  32    31G     6.4%  5.8%  156d    19h
+#  bsldmk-b   active  -n----  5003  72    128G    7.8%  7.8%  156d    19h
+#  bsldmx-b   bound   ------  5004  64    128G
+#  secondary  active  -n--v-  5000  32    32G     1.3%  1.3%  14h     29m
+#  xpldom-b   active  -n----  5001  96    192G    10%   10%   156d    19h
+#  xsldom-b   active  -n----  5002  96    192G    3.4%  3.4%  156d    19h
+#  bcldmx-f         inactive   ------          16    192G
+#  bpldmx-f         inactive   ------          16    192G
+
+
+echo "<<<solaris_ldom_stat>>>"
+ldm list | grep -v NAME | tr -d % | awk '{ if ( $2 == "bound" )  print $1,$5,"0" ; else if ( $2 == "inactive" ) print $1,$4,"0" ; else print $1,$5,$7}'

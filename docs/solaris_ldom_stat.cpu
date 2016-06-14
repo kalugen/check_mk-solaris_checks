@@ -1,0 +1,40 @@
+title: CPU usage of a Solaris ldom
+agents: solaris
+catalog: os/kernel
+license: GPL
+distribution: kalugen
+description:
+ This check monitors the cpu usage of an LDOM. It is intended to run on a
+ physical Oracle VM Server (eg. a T5 or machine) and report data from all
+ running ldoms.
+
+item:
+ a ldom name
+
+examples:
+ # Set default levels for all ldoms
+ ldom_stat_defaults["cpu_levels"] = (90.0, 95.0)
+
+ check_parameters = [
+    # Hosts with tag "production" get 85/95
+    ( {'cpu_levels': (85.0, 95.0)}, ['production', ], ALL_HOSTS, ALL_SERVICES ),
+ ]
+
+ # Exclude ldom from inventory
+ inventory_solaris_ldom_exclude = [ "ldom_name" ]
+
+perfdata:
+ CPU % and abs usage values, along with current allocation of physical CPU cores
+ are saved into the rrd database.
+
+inventory:
+ This check supports inventory.
+
+[parameters]
+parameters (dict): this check supports the new parameters dictionary format.
+
+{"cpu_levels"}: Warning and critical memory usage levels in %
+
+[configuration]
+inventory_solaris_ldom_exclude (list of strings): List of pools to exclude from inventory
+ldom_stat_defaults: Default levels for ldom cpu and memory usage levels

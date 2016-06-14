@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo '<<<df>>>'
+
+df -l -k -F tmpfs 2>/dev/null | sed 1d | grep '/tmp' | \
+while read Filesystem kbytes used avail capacity Mountedon
+do
+    kbytes=$(($used + $avail))
+    echo "$Filesystem tmpfs $kbytes $used $avail $capacity $Mountedon"
+done
