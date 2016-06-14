@@ -1,22 +1,22 @@
-title: Check NFS mounts on solaris 
-agents: Solaris 
-catalog: os/kernel
+title: Check NFS mounts on solaris
+agents: Solaris
+catalog: os/storage
 license: GPL
-distribution: kalugen
+distribution: MIS
 description:
  This check monitors monitor if NFS entries in vfstab are mounted  .
- This check is based on a plugin named check_nfs_mount on plugins dir on solaris machine 
+ This check is based on a plugin named check_nfs_mount on plugins dir on solaris machine
 
 item:
  none
 
 perfdata:
  no perfdata
- 
+
 inventory:
  This check supports inventory through a custom variable and relative inventory rule "Solaris nfsmounts Discovery".
 
 [parameters]
 parameters (dict): this check supports the new parameters dictionary format.
 
-This check has no parameters 
+This check has no parameters

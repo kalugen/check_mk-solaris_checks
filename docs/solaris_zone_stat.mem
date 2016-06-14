@@ -2,7 +2,7 @@ title: Memory usage of a Solaris Zone
 agents: solaris
 catalog: os/kernel
 license: GPL
-distribution: kalugen
+distribution: MIS
 description:
  This check monitors the memory usage of a zone. It is intended to run on a
  global zone and report data from all running zones.

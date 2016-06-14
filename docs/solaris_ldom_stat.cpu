@@ -2,7 +2,7 @@ title: CPU usage of a Solaris ldom
 agents: solaris
 catalog: os/kernel
 license: GPL
-distribution: kalugen
+distribution: MIS
 description:
  This check monitors the cpu usage of an LDOM. It is intended to run on a
  physical Oracle VM Server (eg. a T5 or machine) and report data from all

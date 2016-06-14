@@ -2,7 +2,7 @@ title: State of ZFS pools
 agents: solaris
 catalog: os/storage
 license: GPL
-distribution: kalugen
+distribution: MIS
 description:
  This check monitors the state of ZFS pools. It uses a "coarse" grained
  system command, "zpool -H", reporting on the global usage and state of a whole

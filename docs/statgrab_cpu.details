@@ -1,5 +1,5 @@
 title: Details on CPU usage for Solaris statgrab
-agents: os
+agents: solaris
 catalog: os/kernel
 license: GPL
 distribution: MIS
