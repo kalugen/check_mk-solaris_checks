@@ -1,0 +1,26 @@
+title: CPU usage of a Solaris ldom
+agents: solaris
+catalog: os/kernel
+license: GPL
+distribution: MIS
+description:
+ This checks is a clone of the standard ps check, designed to work with an
+ undocumented and deprecated feature of the old Solaris "ps" command to force
+ the display of the FULL command line of processes. It is useful with Java programs
+ that are tipically launched with a very long command line.
+
+item:
+ see ps
+
+examples:
+ see ps
+
+
+perfdata:
+ see ps
+
+inventory:
+ This check supports inventory.
+
+[parameters]
+see ps
