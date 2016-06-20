@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+echo "<<<solaris_pgstat>>>"
+
+pgstat -A 1 10 &> /tmp/.checkmk_solaris_pgstat
+/opt/csw/bin/ggrep -A 60 SUMMARY /tmp/.checkmk_solaris_pgstat | tr -d % | awk '/Integer_Pipeline/{hw_avg+=$4}{hw_max+=$5}{sw_avg+=$7}{sw_max+=$8} END {print hw_avg/NR "% " hw_max/NR  "% " sw_avg/NR "% " sw_max/NR "% "}'
