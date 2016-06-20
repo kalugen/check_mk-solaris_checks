@@ -23,4 +23,32 @@ inventory:
  This check supports inventory.
 
 [parameters]
-see ps
+procname (string): Process specification. This can either be the name of a process as ouput by the agent.
+   It must exactly match the first column of the agents output. Or - if the string is
+   beginning with a tilde - it is interpreted as a regular expression that must match
+   the beginning of the process line as output by the agent. For the Linux/UNIX agents
+   this allows you to match specific command line arguments of the process. A third possibility is to
+   set the process name to {None}. In that case {all} processes will match. This is probably only useful
+   if you specify a user name.
+user (string): Name of user that owns the process(es). This parameter is optional and can be left out completely.
+warnmin (int): Minimum number of matched process for WARNING state
+okmin (int): Minimum number for OK state
+okmax (int): Maximum number for OK state
+warnmax (int): Maximum number for WARNING state. Counts less than warnmin or greater than
+ warnmax are CRITICAL
+
+parameters (dict): Or the parameters can be given in the new, dictionary based syntax
+   with the elements below.
+   In this case additional parameters cpulevels and cpu_average can be passed.
+
+{"process"}: procname, see above
+{"user"}: see above
+{"warnmin"}: see above
+{"warnmax"}: see above
+{"okmin"}: see above
+{"okmax"}: see above
+{"cpulevels"}: (float, float): levels of CPU usage for {WARN} and {CRIT} in percent
+{"cpu_average"}: int: build average over CPU usage for the given time in minutes
+{"virtual_levels"}: (int, int): levels for the virtual memory usage in bytes
+{"resident_levels"}: (int, int): levels for the resident memory usage in bytes
+{"handle_count"}: (int, int): levels for the process handle count (only applies to windows)
