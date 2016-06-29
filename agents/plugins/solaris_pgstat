@@ -1,4 +1,5 @@
 #!/usr/bin/bash
 
 echo "<<<solaris_pgstat>>>"
-pgstat -A 1 10 
+pgstat -A 1 10 | awk '$0 ~ "SUMMARY" {i=1;next};i'
+
