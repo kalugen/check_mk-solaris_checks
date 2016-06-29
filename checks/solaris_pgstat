@@ -1,0 +1,44 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 2 -*-
+
+factory_settings['solaris_pgstat_defaults']  = {
+  'saturation_levels': (89.0,100.0)
+}
+
+def inventory_solaris_pgstat(info):
+  return [ ( None, {} ) ]
+
+def check_solaris_pgstat(item,paramsi,info):
+  grouped_info = group_info(parse_info(info))
+  
+  # Check
+  (warn,crit) = params['saturation_levels']
+  
+  for group in grouped_info.keys():
+    for metric in check_data[group].keys():
+      val = check_data[group][metric]
+      perfdata.append(("%s_%s" % (group,metric),val,warn,crit,None,None))
+      if "avg" in metric:
+        if val >= crit:
+          rc = 2
+          output += "%s %s: %s%%(!!) " % (group,metric,val)
+        elif val >= warn:
+          rc = 1
+          output += "%s %s: %s%%(!) " % (group,metric,val)
+  
+  if output == "":
+    output = "No processor group resource is full"
+
+  return (rc,output,perfdata)
+
+check_info["solaris_pgstat"] = {
+    'group'                  : 'solaris_pgstat',
+    'has_perfdata'           : True,
+    'check_function'         : check_solaris_pgstat,
+    'service_description'    : 'PG resources',
+    'inventory_function'     : inventory_solaris_pgstat,
+    'default_levels_variable': 'solaris_pgstat_defaults',
+    'includes'               : [ 'solaris_pgstat.include' ]
+}
+
+# vim:ts=2:sw=2:expandtab:ai
