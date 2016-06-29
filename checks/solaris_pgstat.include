@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- encoding: utf-8; py-indent-offset: 2 -*-
 
-def parse_info(info):
+def spgs_parse_info(info):
   parsed_data = {}
 
   for line in info:
@@ -32,7 +32,7 @@ def parse_info(info):
 
   return parsed_data
 
-def group_info(parsed_data):
+def spgs_group_info(parsed_data):
 
   grouped_data = {}
 
