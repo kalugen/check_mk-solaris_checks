@@ -10,6 +10,7 @@ def inventory_solaris_pgstat(info):
 
 def check_solaris_pgstat(item,params,info):
   grouped_info = spgs_group_info(spgs_parse_info(info))
+  output = ""
   
   # Check
   (warn,crit) = params['saturation_levels']
