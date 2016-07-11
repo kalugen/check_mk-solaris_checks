@@ -154,4 +154,59 @@ def solaris_check_ps_common(item, params, info ):
 
     return state, infotext, perfdata
 
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+def spgs_parse_info(info):
+  parsed_data = {}
+
+  for line in info:
+    # Skip until "SUMMARY LINE"
+    if "SUMMARY" not in line:
+      continue
+    else:
+      for line in info:
+        if not len(line) == 9:
+          continue
+  
+        if not line[8] in parsed_data.keys():
+          parsed_data[line[8]] = { 
+          'Integer_Pipeline': [], 
+          'Floating_Point_Unit': [], 
+          'System': [], 
+          'Data_Pipe_to_memory': [] 
+        }
+  
+        parsed_data[line[8]][line[1]].append( { 
+          'hwmin': savefloat(line[2]), 
+          'hwavg': savefloat(line[3]), 
+          'hwmax': savefloat(line[4]), 
+          'swmin': savefloat(line[5]), 
+          'swavg': savefloat(line[6]), 
+          'swmax': savefloat(line[7]) 
+        })
+
+  return parsed_data
+
+def spgs_group_info(parsed_data):
+
+  grouped_data = {}
+
+  for i in parsed_data.keys():
+    if len(parsed_data[i]['System']) != 0 or len(parsed_data[i]['Data_Pipe_to_memory']) != 0:
+      continue
+  
+    fpuavgs = map(lambda x: x['hwavg'], parsed_data[i]['Floating_Point_Unit'])
+    ipavgs  = map(lambda x: x['hwavg'], parsed_data[i]['Integer_Pipeline'])
+    swavgs  = map(lambda x: x['swavg'], parsed_data[i]['Floating_Point_Unit'] + parsed_data[i]['Integer_Pipeline'])
+    swmaxes = map(lambda x: x['swmax'], parsed_data[i]['Floating_Point_Unit'] + parsed_data[i]['Integer_Pipeline'])
+  
+    grouped_data[i] = { 
+      'fpuavg': sum(fpuavgs)/len(fpuavgs),
+      'fpumax': max(map(lambda x: x['hwmax'], parsed_data[i]['Floating_Point_Unit'])), 
+      'ipavg':  sum(ipavgs)/len(ipavgs),
+      'ipmax':  max(map(lambda x: x['hwmax'], parsed_data[i]['Integer_Pipeline'])), 
+      'swavg':  sum(swavgs)/len(swavgs), 
+      'swmax':  max(swmaxes) 
+    }
+
+  return grouped_data
+
+# vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4

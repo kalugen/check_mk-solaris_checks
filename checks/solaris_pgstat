@@ -41,7 +41,7 @@ check_info["solaris_pgstat"] = {
     'service_description'    : 'PG resources',
     'inventory_function'     : inventory_solaris_pgstat,
     'default_levels_variable': 'solaris_pgstat_defaults',
-    'includes'               : [ 'solaris_pgstat.include' ]
+    'includes'               : [ 'solaris_checks.include' ]
 }
 
 # vim:ts=2:sw=2:expandtab:ai

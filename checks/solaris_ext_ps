@@ -16,7 +16,7 @@ check_info['solaris_ext_ps'] = {
     "check_function"          : solaris_check_ps,
     "inventory_function"      : solaris_inventory_ps,
     "service_description"     : "ps_ext_%s",
-    "includes"                : [ "solaris_ext_ps.include","ps","ps.include" ],
+    "includes"                : [ "solaris_checks.include","ps","ps.include" ],
     "has_perfdata"            : True,
     "node_info"               : True, # add first column with actual host name
 }
