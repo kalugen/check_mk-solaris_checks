@@ -1,6 +1,6 @@
 # PROGETTO UNICO CHECK SOLARIS
 
-Versione: 1.0.1
+Versione: 1.1.1
 
 ## Check inclusi:
 
@@ -10,3 +10,4 @@ Versione: 1.0.1
 * solaris_ldom_stat
 * solaris_zone_stat
 * statgrab_cpu.details
+* solaris_pgstat
