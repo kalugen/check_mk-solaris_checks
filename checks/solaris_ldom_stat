@@ -31,8 +31,12 @@ def check_solaris_ldom_stat_cpu(item,params,info):
   for line in info:
     if line[0] == item:
       core_num  = saveint(line[1])
-      pct_usage = savefloat(line[2])
-
+      
+      if len(line) > 2:
+        pct_usage = savefloat(line[2])
+      else:
+        pct_usage = 0.0
+        
       # livelli cpu
       cpu_warn,cpu_crit = params["cpu_levels"]
 
