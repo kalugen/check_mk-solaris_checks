@@ -30,5 +30,9 @@ deploy-test:
     dependencies:
         - build-test
     stage: deploy
+    tags:
+        - cmk
+        - test
+        
     only:
         - master
