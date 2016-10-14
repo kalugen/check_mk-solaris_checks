@@ -1,6 +1,6 @@
 # PROGETTO UNICO CHECK SOLARIS
 
-Versione: 1.1.1
+Versione: 1.1.2
 
 ## Check inclusi:
 
