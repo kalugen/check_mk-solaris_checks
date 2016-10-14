@@ -11,3 +11,5 @@ Versione: 1.1.1
 * solaris_zone_stat
 * statgrab_cpu.details
 * solaris_pgstat
+ 
+Quasi tutti i check includono agenti
