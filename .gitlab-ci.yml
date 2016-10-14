@@ -13,11 +13,9 @@ build-test:
     tags:
         - cmk
         - test
-    only:
-        - master
     artifacts:
         paths:
-            - "packages/*.mkp"
+            - "packages/"
         expire_in: 1 week
         name: $CI_PROJECT_NAME
         
@@ -29,10 +27,8 @@ deploy-test:
         - build-test
     stage: deploy
     environment: test
-    artifacts:
-        paths:
-        - "packages/"
-
+    only:
+        - master
     tags:
         - cmk
         - test
