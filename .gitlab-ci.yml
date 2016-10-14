@@ -5,9 +5,6 @@ stages:
   - build
   - deploy
 
-before_script:
-    - "sudo chown -R gitlab-runner /home/gitlab-runner"
-  
 build-test:
     script: 
         - "sudo ./scripts/build.sh"
