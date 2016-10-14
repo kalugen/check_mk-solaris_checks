@@ -2,6 +2,7 @@ variables:
   GIT_STRATEGY: clone
 
 stages:
+  - build
   - deploy
 
 before_script:
@@ -30,9 +31,7 @@ deploy-test:
     dependencies:
         - build-test
     stage: deploy
+    environment: test
     tags:
         - cmk
         - test
-        
-    only:
-        - master
