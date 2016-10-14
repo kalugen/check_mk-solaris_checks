@@ -29,6 +29,10 @@ deploy-test:
         - build-test
     stage: deploy
     environment: test
+    artifacts:
+        paths:
+        - "packages/"
+
     tags:
         - cmk
         - test
