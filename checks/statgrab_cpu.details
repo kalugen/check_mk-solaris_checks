@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- encoding: utf-8; py-indent-offset: 2 -*-
 
-# Regexp handling function changed name after 1.2.6
-if("1.2.6" not in check_mk_version):
-  get_regex = regex
-
 # Example input:
 #
 # <<<statgrab_cpu>>>
@@ -33,7 +29,7 @@ factory_settings["solaris_cpu_details_defaults"] = {
 # Inventory function
 def inventory_solaris_cpu_details(info):
 
-  relevant_metrics = get_regex('ctxsw|intrs|syscalls')
+  relevant_metrics = re.compile('ctxsw|intrs|syscalls')
 
   for line in info:
     if relevant_metrics.match(line[0]):
