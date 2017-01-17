@@ -30,7 +30,7 @@ function waitmax
    SIGNAL=9
    shift
    # Run command in background
-   ksh -c "$*" &
+   bash -c "$*" &
    PID=$!
    # Wait for termination within TIMOUT seconds
    while [ $TIMEOUT -gt 0 ]
