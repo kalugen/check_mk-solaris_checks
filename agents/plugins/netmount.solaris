@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# +------------------------------------------------------------------+
+# |             ____ _               _        __  __ _  __           |
+# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
+# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
+# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
+# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
+# |                                                                  |
+# | Copyright Mathias Kettner 2014             mk@mathias-kettner.de |
+# +------------------------------------------------------------------+
+#
+# This file is part of Check_MK.
+# The official homepage is at http://mathias-kettner.de/check_mk.
+#
+# check_mk is free software;  you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+function waitmax
+{
+   TIMEOUT=${1}0
+   SIGNAL=9
+   shift
+   # Run command in background
+   ksh -c "$*" &
+   PID=$!
+   # Wait for termination within TIMOUT seconds
+   while [ $TIMEOUT -gt 0 ]
+   do
+       TIMEOUT=$((TIMEOUT - 1))
+       if [ ! -e /proc/$PID ] ; then
+           return 0
+       fi
+       perl -e "select(undef, undef, undef, 0.1);"
+   done
+   # Process did not terminate in time. Kill and
+   # return with an error
+   kill -9 $PID
+   return 255
+}
+
+STATBIN=""
+
+if type stat &>/dev/null; then
+    STATBIN="stat"
+elif type /opt/csw/bin/gstat  &>/dev/null; then
+    STATBIN="/opt/csw/bin/gstat"
+fi
+
+if [[ ! "${STATBIN}" = "" ]]; then
+    echo '<<<nfsmounts>>>'
+    mount -v | grep nfs | cut -f3 -d' ' | while read MP; do
+        waitmax 2 "${STATBIN}" -f -c '"'$MP' ok - - - -"' "$MP" || echo "$MP hanging 0 0 0 0"
+    done
+    echo '<<<cifsmount>>>'
+    mount -v | grep cifs | cut -f3 -d' ' | while read MP; do
+        waitmax 2 "${STATBIN}" -f -c '"'$MP' ok - - - -"' "$MP" || echo "$MP hanging 0 0 0 0"
+    done
+fi
