@@ -1,6 +1,6 @@
 # PROGETTO UNICO CHECK SOLARIS
 
-Versione: 1.1.7
+Versione: 1.2.0
 
 ## Check inclusi:
 
@@ -12,4 +12,4 @@ Versione: 1.1.7
 * statgrab_cpu.details
 * solaris_pgstat
  
-Quasi tutti i check includono agenti
+Quasi tutti i check includono agenti. Oltre ai check, c'è un plugin per portare su Solaris il check dei mount NFS/CIFS
